@@ -9,10 +9,10 @@ import (
 )
 
 type HTTPServer struct {
-	Addr string
+	Addr string `yaml:"address" env-required:"true"`
 }
 
-//go get -u github.com/ilyakaznacheev/cleanenv
+// env-default:"production"
 
 type Config struct {
 	Env         string `yaml:"env" env:"ENV" env-required:"true"`
@@ -21,13 +21,12 @@ type Config struct {
 }
 
 func MustLoad() *Config {
-
 	var configPath string
 
 	configPath = os.Getenv("CONFIG_PATH")
 
 	if configPath == "" {
-		flags := flag.String("config", "", "Path to the config file")
+		flags := flag.String("config", "", "path to the configuration file")
 		flag.Parse()
 
 		configPath = *flags
@@ -38,17 +37,15 @@ func MustLoad() *Config {
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		log.Fatalf("Config file does not exist: %s", configPath)
+		log.Fatalf("config file does not exist: %s", configPath)
 	}
 
 	var cfg Config
 
 	err := cleanenv.ReadConfig(configPath, &cfg)
-
 	if err != nil {
-		log.Fatalf("Failed to read config file: %s", err.Error())
+		log.Fatalf("can not read config file: %s", err.Error())
 	}
 
 	return &cfg
-
 }

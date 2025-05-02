@@ -24,14 +24,8 @@ go.work.sum
 # env file
 .env
 
-# IDE files
-.idea/
-.vscode/
-# Local configuration files
-*.local
-
+/storage
+/config
 
 .DS_Store
-
-
-storage
+.DS_Store
