@@ -30,7 +30,9 @@ func main() {
 		Addr:    cfg.Addr,
 		Handler: router,
 	}
-	fmt.Println("server started on ", cfg.Addr)
+
+	slog.Info("starting server", slog.String("address", cfg.Addr))
+	fmt.Printf("server started %s", cfg.Addr)
 
 	done := make(chan os.Signal, 1)
 
