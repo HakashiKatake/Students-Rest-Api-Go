@@ -1,6 +1,7 @@
 package student
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +14,10 @@ import (
 	"github.com/HakashiKatake/Students-Rest-Api-Go/internal/utlis/response"
 	"github.com/go-playground/validator/v10"
 )
+
+type Sqlite struct {
+	Db *sql.DB
+}
 
 func New(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -38,8 +43,15 @@ func New(storage storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		slog.Info("creating new student")
+		lastId, err := storage.CreateStudent(student.Name, student.Email, student.Age)
 
-		response.WriteJson(w, http.StatusCreated, map[string]string{"success": "student created"})
+		slog.Info("student created", slog.Int64("id", lastId), slog.String("name", student.Name), slog.String("email", student.Email), slog.Int("age", student.Age))
+
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(fmt.Errorf("failed to create student: %s", err.Error())))
+			return
+		}
+
+		response.WriteJson(w, http.StatusCreated, map[string]int64{"id": lastId})
 	}
 }
