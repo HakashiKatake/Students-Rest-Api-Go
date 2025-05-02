@@ -31,3 +31,5 @@ go.work.sum
 *.local
 
 .DS_Store
+
+storage
